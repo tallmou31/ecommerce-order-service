@@ -1,0 +1,25 @@
+
+entity Order {
+	date Instant required
+    deliveryAddress String required
+    userId Long required
+}
+
+entity OrderItem {
+	orderId Long required
+    productId Long required
+    actualPrice Double required min(0)
+    quantity Long required min(1)
+}
+
+relationship ManyToOne {
+	OrderItem to Order
+}
+
+dto * with mapstruct
+
+service all with serviceImpl
+
+paginate Order with pagination
+
+filter Order
