@@ -3,6 +3,13 @@ entity Order {
 	date Instant required
     deliveryAddress String required
     userId Long required
+    status OrderStatus
+    expectedDeliveryDate LocalDate
+    deliveryDate LocalDate
+}
+
+enum OrderStatus {
+	EN_COURS_TRAITEMENT, EN_COURS_LIVRAISON, LIVRE, ANNULE
 }
 
 entity OrderItem {
