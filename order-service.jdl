@@ -13,7 +13,6 @@ enum OrderStatus {
 }
 
 entity OrderItem {
-	orderId Long required
     productId Long required
     actualPrice Double required min(0)
     quantity Long required min(1)

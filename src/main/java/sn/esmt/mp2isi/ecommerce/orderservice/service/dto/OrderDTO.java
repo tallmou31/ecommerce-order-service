@@ -3,8 +3,13 @@ package sn.esmt.mp2isi.ecommerce.orderservice.service.dto;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.validation.constraints.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import sn.esmt.mp2isi.ecommerce.orderservice.domain.OrderItem;
 import sn.esmt.mp2isi.ecommerce.orderservice.domain.enumeration.OrderStatus;
 
 /**
@@ -29,6 +34,10 @@ public class OrderDTO implements Serializable {
     private LocalDate expectedDeliveryDate;
 
     private LocalDate deliveryDate;
+
+    @JsonIgnoreProperties("order")
+    private Set<OrderItemDTO> orderItems = new HashSet<>();
+
 
     public Long getId() {
         return id;
@@ -119,5 +128,13 @@ public class OrderDTO implements Serializable {
             ", expectedDeliveryDate='" + getExpectedDeliveryDate() + "'" +
             ", deliveryDate='" + getDeliveryDate() + "'" +
             "}";
+    }
+
+    public Set<OrderItemDTO> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(Set<OrderItemDTO> orderItems) {
+        this.orderItems = orderItems;
     }
 }

@@ -14,8 +14,10 @@ import sn.esmt.mp2isi.ecommerce.orderservice.domain.Order;
 import sn.esmt.mp2isi.ecommerce.orderservice.repository.OrderRepository;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.criteria.OrderCriteria;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.OrderDTO;
+import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.UserDTO;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.mapper.OrderMapper;
 import tech.jhipster.service.QueryService;
+import tech.jhipster.service.filter.LongFilter;
 
 /**
  * Service for executing complex queries for {@link Order} entities in the database.
@@ -51,6 +53,18 @@ public class OrderQueryService extends QueryService<Order> {
     }
 
     /**
+     * Return a {@link List} of {@link OrderDTO} which matches any of criteria from the database.
+     * @param criteria The object which holds all the filters, which the entities should match.
+     * @return the matching entities.
+     */
+    @Transactional(readOnly = true)
+    public List<OrderDTO> findByCriteriaOr(OrderCriteria criteria) {
+        log.debug("find by criteria : {}", criteria);
+        final Specification<Order> specification = createOrSpecification(criteria);
+        return orderMapper.toDto(orderRepository.findAll(specification));
+    }
+
+    /**
      * Return a {@link Page} of {@link OrderDTO} which matches the criteria from the database.
      * @param criteria The object which holds all the filters, which the entities should match.
      * @param page The page, which should be returned.
@@ -64,6 +78,19 @@ public class OrderQueryService extends QueryService<Order> {
     }
 
     /**
+     * Return a {@link Page} of {@link OrderDTO} which matches any of criteria from the database.
+     * @param criteria The object which holds all the filters, which the entities should match.
+     * @param page The page, which should be returned.
+     * @return the matching entities.
+     */
+    @Transactional(readOnly = true)
+    public Page<OrderDTO> findByCriteriaOr(OrderCriteria criteria, Pageable page) {
+        log.debug("find by criteria : {}, page: {}", criteria, page);
+        final Specification<Order> specification = createOrSpecification(criteria);
+        return orderRepository.findAll(specification, page).map(orderMapper::toDto);
+    }
+
+    /**
      * Return the number of matching entities in the database.
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the number of matching entities.
@@ -72,6 +99,18 @@ public class OrderQueryService extends QueryService<Order> {
     public long countByCriteria(OrderCriteria criteria) {
         log.debug("count by criteria : {}", criteria);
         final Specification<Order> specification = createSpecification(criteria);
+        return orderRepository.count(specification);
+    }
+
+    /**
+     * Return the number of matching entities in the database.
+     * @param criteria The object which holds all the filters, which the entities should match.
+     * @return the number of matching entities.
+     */
+    @Transactional(readOnly = true)
+    public long countByCriteriaOr(OrderCriteria criteria) {
+        log.debug("count by criteria : {}", criteria);
+        final Specification<Order> specification = createOrSpecification(criteria);
         return orderRepository.count(specification);
     }
 
@@ -119,5 +158,68 @@ public class OrderQueryService extends QueryService<Order> {
             }
         }
         return specification;
+    }
+
+    protected Specification<Order> createOrSpecification(OrderCriteria criteria) {
+        var alwaysFalseFilter = new LongFilter();
+        alwaysFalseFilter.setEquals(0L);
+        Specification<Order> specification = Specification.where(buildSpecification(alwaysFalseFilter, Order_.id));
+        if(criteria == null) {
+            return null;
+        }
+            // This has to be called first, because the distinct method returns null
+        if (criteria.getDistinct() != null) {
+            specification = specification.or(distinct(criteria.getDistinct()));
+        }
+        if (criteria.getId() != null) {
+            specification = specification.or(buildRangeSpecification(criteria.getId(), Order_.id));
+        }
+        if (criteria.getDate() != null) {
+            specification = specification.or(buildRangeSpecification(criteria.getDate(), Order_.date));
+        }
+        if (criteria.getDeliveryAddress() != null) {
+            specification = specification.or(buildStringSpecification(criteria.getDeliveryAddress(), Order_.deliveryAddress));
+        }
+        if (criteria.getUserId() != null) {
+            specification = specification.or(buildRangeSpecification(criteria.getUserId(), Order_.userId));
+        }
+        if (criteria.getStatus() != null) {
+            specification = specification.or(buildSpecification(criteria.getStatus(), Order_.status));
+        }
+        if (criteria.getExpectedDeliveryDate() != null) {
+            specification = specification.or(buildRangeSpecification(criteria.getExpectedDeliveryDate(), Order_.expectedDeliveryDate));
+        }
+        if (criteria.getDeliveryDate() != null) {
+            specification = specification.or(buildRangeSpecification(criteria.getDeliveryDate(), Order_.deliveryDate));
+        }
+        if (criteria.getOrderItemId() != null) {
+            specification =
+                specification.or(
+                    buildSpecification(
+                        criteria.getOrderItemId(),
+                        root -> root.join(Order_.orderItems, JoinType.LEFT).get(OrderItem_.id)
+                    )
+                );
+        }
+
+        return specification;
+    }
+
+    public Page<OrderDTO> findByCriteriaForCustomer(OrderCriteria criteria, UserDTO user, Pageable page) {
+        log.debug("find by criteria : {}, page: {}", criteria, page);
+        var userFilter = new LongFilter();
+        userFilter.setEquals(user.getId());
+        criteria.setUserId(userFilter);
+        final Specification<Order> specification = createSpecification(criteria);
+        return orderRepository.findAll(specification, page).map(orderMapper::toDto);
+    }
+
+    public Page<OrderDTO> findByCriteriaForCustomerOr(OrderCriteria criteria, UserDTO user, Pageable page) {
+        log.debug("find by criteria : {}, page: {}", criteria, page);
+        var userFilter = new LongFilter();
+        userFilter.setEquals(user.getId());
+        final Specification<Order> specification = Specification.where(buildRangeSpecification(userFilter, Order_.userId))
+            .and(createOrSpecification(criteria));
+        return orderRepository.findAll(specification, page).map(orderMapper::toDto);
     }
 }

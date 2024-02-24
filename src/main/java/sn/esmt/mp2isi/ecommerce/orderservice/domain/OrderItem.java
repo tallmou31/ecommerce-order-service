@@ -21,10 +21,6 @@ public class OrderItem implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "order_id", nullable = false)
-    private Long orderId;
-
-    @NotNull
     @Column(name = "product_id", nullable = false)
     private Long productId;
 
@@ -55,19 +51,6 @@ public class OrderItem implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getOrderId() {
-        return this.orderId;
-    }
-
-    public OrderItem orderId(Long orderId) {
-        this.setOrderId(orderId);
-        return this;
-    }
-
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
     }
 
     public Long getProductId() {
@@ -146,7 +129,6 @@ public class OrderItem implements Serializable {
     public String toString() {
         return "OrderItem{" +
             "id=" + getId() +
-            ", orderId=" + getOrderId() +
             ", productId=" + getProductId() +
             ", actualPrice=" + getActualPrice() +
             ", quantity=" + getQuantity() +

@@ -16,11 +16,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import sn.esmt.mp2isi.ecommerce.orderservice.domain.enumeration.CriteriaType;
+import sn.esmt.mp2isi.ecommerce.orderservice.domain.enumeration.OrderStatus;
 import sn.esmt.mp2isi.ecommerce.orderservice.repository.OrderRepository;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.OrderQueryService;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.OrderService;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.criteria.OrderCriteria;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.OrderDTO;
+import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.OrderRequestDTO;
+import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.OrderResponseDTO;
 import sn.esmt.mp2isi.ecommerce.orderservice.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
@@ -75,7 +79,7 @@ public class OrderResource {
     /**
      * {@code PUT  /orders/:id} : Updates an existing order.
      *
-     * @param id the id of the orderDTO to save.
+     * @param id       the id of the orderDTO to save.
      * @param orderDTO the orderDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated orderDTO,
      * or with status {@code 400 (Bad Request)} if the orderDTO is not valid,
@@ -109,7 +113,7 @@ public class OrderResource {
     /**
      * {@code PATCH  /orders/:id} : Partial updates given fields of an existing order, field will ignore if it is null
      *
-     * @param id the id of the orderDTO to save.
+     * @param id       the id of the orderDTO to save.
      * @param orderDTO the orderDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated orderDTO,
      * or with status {@code 400 (Bad Request)} if the orderDTO is not valid,
@@ -117,7 +121,7 @@ public class OrderResource {
      * or with status {@code 500 (Internal Server Error)} if the orderDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/orders/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/orders/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<OrderDTO> partialUpdateOrder(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody OrderDTO orderDTO
@@ -152,10 +156,28 @@ public class OrderResource {
     @GetMapping("/orders")
     public ResponseEntity<List<OrderDTO>> getAllOrders(
         OrderCriteria criteria,
+        @RequestParam(defaultValue = "AND", required = false) CriteriaType criteriaType,
         @org.springdoc.api.annotations.ParameterObject Pageable pageable
     ) {
         log.debug("REST request to get Orders by criteria: {}", criteria);
-        Page<OrderDTO> page = orderQueryService.findByCriteria(criteria, pageable);
+        Page<OrderDTO> page = CriteriaType.OR == criteriaType
+            ? orderQueryService.findByCriteriaOr(criteria, pageable)
+            : orderQueryService.findByCriteria(criteria, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/orders/customer")
+    public ResponseEntity<List<OrderDTO>> getAllOrdersForCustomer(
+        OrderCriteria criteria,
+        @RequestParam(defaultValue = "AND", required = false) CriteriaType criteriaType,
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable
+    ) {
+        log.debug("REST request to get Orders by criteria: {}", criteria);
+        var user = orderService.getUser();
+        Page<OrderDTO> page = CriteriaType.OR == criteriaType
+            ? orderQueryService.findByCriteriaForCustomerOr(criteria, user, pageable)
+            : orderQueryService.findByCriteriaForCustomer(criteria, user, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -167,9 +189,11 @@ public class OrderResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
      */
     @GetMapping("/orders/count")
-    public ResponseEntity<Long> countOrders(OrderCriteria criteria) {
+    public ResponseEntity<Long> countOrders(OrderCriteria criteria, @RequestParam(defaultValue = "AND", required = false) CriteriaType criteriaType) {
         log.debug("REST request to count Orders by criteria: {}", criteria);
-        return ResponseEntity.ok().body(orderQueryService.countByCriteria(criteria));
+        return CriteriaType.OR == criteriaType
+            ? ResponseEntity.ok().body(orderQueryService.countByCriteriaOr(criteria))
+            : ResponseEntity.ok().body(orderQueryService.countByCriteria(criteria)) ;
     }
 
     /**
@@ -199,5 +223,15 @@ public class OrderResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping("/orders/validate")
+    public ResponseEntity<OrderResponseDTO> validateOrder(@RequestBody OrderRequestDTO order) {
+        return ResponseEntity.ok(orderService.validateOrder(order));
+    }
+
+    @GetMapping("/orders/close/{id}/{status}")
+    public ResponseEntity<OrderDTO> validateOrder(@PathVariable Long id, @PathVariable OrderStatus status) {
+        return ResponseEntity.ok(orderService.clodeOrder(id, status));
     }
 }

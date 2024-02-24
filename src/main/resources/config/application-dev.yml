@@ -50,7 +50,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/orderservice?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: root
-    password:
+    password: root
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -63,6 +63,23 @@ spring:
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: om.sn.partner@gmail.com
+    password: sygxzdkbihgzfvxa
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          allow8bitmime: true
+          ssl:
+            trust: smtp.gmail.com
+            protocols: TLSv1.2
+        smtps:
+          allow8bitmime: true
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:
@@ -105,10 +122,12 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
-        base64-secret: MWJiMTIyNzk3NTlhZDc2MmEzYmMxNmNjMzY0NWM5MzA1OGVkODMyM2YwM2UwOWU4MzNhMTViMWJiMzRjZDg3MjczYTJkMzBiNTUzYjhiOTdiYWE5ZTNmMjhmNjk5OTE1YmQwZmZlMTBhZDBiNmVhMDAwYTk2MTA1MWYwZDE4MWY=
+        base64-secret: MWJkZTg2NTA4ZGYxOWJhNWIxYjNmNmNiOTFkYzQ2OGU5MDBiMGE3NTliMzQ2YTRmOGU0MTQ1MzYzZTE5MTE0M2U4MzliZWVkMWZmNWUyMzlhZDk2NDE4MmVhMzIwMGFiZjgxYmVkN2QwOTgyOGYyZDExZTQ4NTliZjY4N2QzZmQ=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
+  mail: # specific JHipster mail property, for standard properties see MailProperties
+    base-url: http://localhost:9000
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration

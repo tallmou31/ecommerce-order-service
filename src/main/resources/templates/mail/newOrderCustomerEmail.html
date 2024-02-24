@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+  <head>
+    <title>Nouvelle commande</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+  </head>
+  <body>
+    <p>Bonjour <span style="font-weight: bold" th:text="${nom}"></span>, </p>
+    <p>Vous venez de passer une commande chez SenCommerce.</p>
+    <p> <span style="font-weight: bold">Vous serez livré à l'adresse <span style="font-weight: bold" th:text="${deliveryAddress}"></span> au plus tard le </span> <span style="font-weight: bold" th:text="${deliveryDate}"></span></p>
+    <p>Ci-dessous les détails</p>
+
+    <div>
+      <table style='border-collapse: collapse; width: 100%;'>
+        <thead style='background-color: #00807f'>
+        <tr>
+          <th style='border: 1px solid #ddd; text-align: left; padding: 15px;'>Référence produit</th>
+          <th style='border: 1px solid #ddd; text-align: left; padding: 15px;'>Nom produit</th>
+          <th style='border: 1px solid #ddd; text-align: left; padding: 15px;'>Quantité</th>
+          <th style='border: 1px solid #ddd; text-align: left; padding: 15px;'>Prix unitaire (FCFA)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="item : ${order.items}">
+          <tr style='nth-child(even){background-color: #f2f2f2}'>
+            <td style='border: 1px solid #ddd; text-align: left; padding: 15px;color: green' th:text="${item.productReference}"></td>
+            <td style='border: 1px solid #ddd; text-align: left; padding: 15px;color: green' th:text="${item.productName}"></td>
+            <td style='border: 1px solid #ddd; text-align: left; padding: 15px;color: green' th:text="${item.quantity}"></td>
+            <td style='border: 1px solid #ddd; text-align: left; padding: 15px;' th:text="${item.price}" ></td>
+          </tr>
+        </th:block>
+        </tbody>
+      </table>
+
+      <p> <span style="font-weight: bold">Total : </span> <span th:text="${total}"></span></p>
+    </div>
+    <p>
+      <span>Cordialement, </span>
+      <br />
+      <em>SenCommerce.</em>
+    </p>
+  </body>
+</html>

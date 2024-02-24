@@ -3,7 +3,11 @@ package sn.esmt.mp2isi.ecommerce.orderservice.service;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import sn.esmt.mp2isi.ecommerce.orderservice.domain.enumeration.OrderStatus;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.OrderDTO;
+import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.OrderRequestDTO;
+import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.OrderResponseDTO;
+import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.UserDTO;
 
 /**
  * Service Interface for managing {@link sn.esmt.mp2isi.ecommerce.orderservice.domain.Order}.
@@ -55,4 +59,12 @@ public interface OrderService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    OrderResponseDTO validateOrder(OrderRequestDTO order);
+
+    OrderDTO clodeOrder(Long id, OrderStatus status);
+
+    UserDTO getUser();
+
+    UserDTO getUserById(Long id);
 }

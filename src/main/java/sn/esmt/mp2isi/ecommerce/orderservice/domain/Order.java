@@ -207,4 +207,12 @@ public class Order implements Serializable {
             ", deliveryDate='" + getDeliveryDate() + "'" +
             "}";
     }
+
+    public Double getTotal() {
+        Double result = 0d;
+        for (var item: orderItems) {
+            result += (item.getActualPrice() * item.getQuantity());
+        }
+        return result;
+    }
 }
