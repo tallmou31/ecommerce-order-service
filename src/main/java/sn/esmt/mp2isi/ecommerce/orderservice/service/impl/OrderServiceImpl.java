@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import sn.esmt.mp2isi.ecommerce.orderservice.exception.CustomBadRequestException
 import sn.esmt.mp2isi.ecommerce.orderservice.exception.CustomUnauthorizedRequestException;
 import sn.esmt.mp2isi.ecommerce.orderservice.repository.OrderItemRepository;
 import sn.esmt.mp2isi.ecommerce.orderservice.repository.OrderRepository;
+import sn.esmt.mp2isi.ecommerce.orderservice.security.SecurityUtils;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.MailService;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.OrderService;
 import sn.esmt.mp2isi.ecommerce.orderservice.service.dto.*;
@@ -170,6 +172,7 @@ public class OrderServiceImpl implements OrderService {
         }
         return respUser.getBody();
     }
+
 
     @Override
     public UserDTO getUserById(Long id) {

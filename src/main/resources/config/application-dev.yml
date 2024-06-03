@@ -19,6 +19,8 @@ logging:
     tech.jhipster: DEBUG
     org.hibernate.SQL: DEBUG
     sn.esmt.mp2isi.ecommerce.orderservice: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
+
 
 spring:
   devtools:
@@ -48,9 +50,9 @@ spring:
       port: 8500
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://localhost:3306/orderservice?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
-    username: root
-    password: root
+    url: jdbc:mysql://localhost:3306/ecommerceOrderservice?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: superuser
+    password: 1@InsImoc2022
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -127,7 +129,7 @@ jhipster:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
   mail: # specific JHipster mail property, for standard properties see MailProperties
-    base-url: http://localhost:9000
+    base-url: http://10.137.21.39:4000
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
